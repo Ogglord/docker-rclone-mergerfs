@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+# Cloud Upload
+*/10 * * * * root /opt/rclone/scripts/upload_cloud > /opt/rclone/logs/cron.log 2>&1
+

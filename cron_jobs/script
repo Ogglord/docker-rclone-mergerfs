@@ -1,0 +1,20 @@
+#!/bin/bash
+# RClone Config file
+echo "CRON: Uploading to cloud..."
+RCLONE_CONFIG="/config/rclone.conf"
+export RCLONE_CONFIG
+
+#exit if running
+if [[ "`pidof -x $(basename $0) -o %PPID`" ]]; 
+then
+  echo "CRON: Already running, exiting."
+  exit; 
+fi
+
+## wait 30 sec
+sleep 30
+
+# Move older local files to the cloud
+/usr/bin/rclone move /mnt/cache/ $RemotePath -v --log-file /opt/rclone/logs/upload.log --drive-chunk-size 64M --exclude-from /opt/rclone/scripts/excludes --delete-empty-src-dirs --fast-list
+
+echo "CRON: Upload completed!"

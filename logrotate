@@ -1,0 +1,12 @@
+/opt/rclone/logs/*.log {
+    daily
+    missingok
+    rotate 2
+    compress
+    notifempty
+    create 0640 root root
+    sharedscripts
+    postrotate
+        echo "logs for rclone rotated..."
+    endscript
+}
