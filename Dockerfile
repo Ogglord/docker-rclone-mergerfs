@@ -16,34 +16,30 @@ ENV RemotePath="oggelito:/" \
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 
-RUN apt-get update && \
-      apt-get -y install sudo
+# ADD our mergerfs install script
+ADD ./install_scripts/get_mergerfs_latest.deb.sh ./
 
-# install the stuff we need ...
-ADD ./install_scripts/*.sh ./
-
-RUN apt-get -y install bash git curl fuse unzip -qq \
+RUN apt-get update -qq && apt-get -y install sudo bash git curl fuse unzip -qq \
   && curl https://rclone.org/install.sh | sudo bash \
   && chmod +x get_mergerfs_latest.deb.sh \
   && ./get_mergerfs_latest.deb.sh \
-  && dpkg -i mergerfs_latest.deb
+  && dpkg -i mergerfs_latest.deb > /dev/null
   
 # Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+RUN apt-get clean -qq && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm get_mergerfs_latest.deb.sh \
   && rm mergerfs_latest.deb
 
 ## Setup upload script
-RUN mkdir -p /opt/rclone/logs
-RUN touch /opt/rclone/logs/cron.log
-RUN touch /opt/rclone/logs/upload.log
-COPY cron_jobs/excludes /opt/rclone/scripts/excludes
-COPY cron_jobs/script /opt/rclone/scripts/upload_cloud
-RUN chmod +x /opt/rclone/scripts/upload_cloud
+COPY cron_jobs/* /opt/rclone/scripts/
+RUN mkdir -p /opt/rclone/logs \
+  && touch /opt/rclone/logs/cron.log \
+  && touch /opt/rclone/logs/upload.log \
+  && chmod +x /opt/rclone/scripts/upload_cloud
 
 ## Setup upload cron job
-COPY cron_jobs/schedule /etc/cron.d/upload_cloud
-RUN chmod 600 /etc/cron.d/upload_cloud ## important for cron.d jobs!
+COPY cron_jobs/cron_upload_cloud /etc/cron.d/cron_upload_cloud
+RUN chmod 600 /etc/cron.d/cron_upload_cloud ## important for cron.d jobs!
 
 
 # setup services
