@@ -24,7 +24,7 @@ RUN apt-get update -qq && apt-get -y install sudo bash git curl fuse unzip -qq \
   && chmod +x get_mergerfs_latest.deb.sh \
   && ./get_mergerfs_latest.deb.sh \
   && dpkg -i mergerfs_latest.deb > /dev/null
-  
+
 # Clean up APT when done.
 RUN apt-get clean -qq && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm get_mergerfs_latest.deb.sh \
