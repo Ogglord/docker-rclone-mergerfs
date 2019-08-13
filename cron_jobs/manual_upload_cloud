@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Manually triggering cloud upload..." >> /opt/rclone/logs/upload.log
+/opt/rclone/scripts/upload_cloud >> /opt/rclone/logs/upload.log

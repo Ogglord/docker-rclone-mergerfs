@@ -12,9 +12,14 @@ then
 fi
 
 ## wait 30 sec
-sleep 30
+sleep 2
 
 # Move older local files to the cloud
-/usr/bin/rclone move /mnt/cache/ $RemotePath -v --log-file /opt/rclone/logs/upload.log --drive-chunk-size 64M --exclude-from /opt/rclone/scripts/excludes --delete-empty-src-dirs --fast-list
+/usr/bin/rclone move /mnt/cache/ $RemotePath --log-file /opt/rclone/logs/upload.log --exclude-from /opt/rclone/scripts/excludes $MoveCommands
 
-echo "CRON: Upload completed!"
+
+echo "CRON: Upload completed! Refreshing cache..."
+# force refresh
+/usr/bin/rclone rc vfs/refresh recursive=true | jq -r '.result[]'
+
+echo "CRON: Refresh complete"
